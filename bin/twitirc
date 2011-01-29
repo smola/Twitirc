@@ -2,6 +2,9 @@
 
 use strict;
 use utf8;
+use 5.010;
+use Any::Moose;
+use Hailo;
 use AnyEvent;
 use AnyEvent::IRC::Util qw/ is_nick_prefix split_prefix prefix_nick /;
 use AnyEvent::IRC::Client;
@@ -42,6 +45,9 @@ my $twitter_client = AnyEvent::Twitter->new(
     access_token        => $config->{twitter}{access_token},
     access_token_secret => $config->{twitter}{access_token_secret},
 );
+
+# setup hailo
+my $hailo = Hailo->new(brain => "$Bin/../conf/hailo.sqlite");
 
 # setup irc client
 my $irc = new AnyEvent::IRC::Client;
@@ -191,7 +197,9 @@ $c->recv;
 sub private_message {}
 sub message_to_self {
     my ( $irc, $channel, $from, $msg ) = @_;
-    $irc->send_srv('PRIVMSG', $channel, "$from: ok");
+    my $text = $hailo->reply($msg);
+    $hailo->learn($msg);
+    $irc->send_srv('PRIVMSG', $channel, "$from: $text");
 }
 sub message_to_channel {}
 sub message_to_other {}

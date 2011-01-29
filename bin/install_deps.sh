@@ -9,4 +9,4 @@ cpanm --sudo AnyEvent::Twitter::Stream
 cpanm --sudo Net::Twitter::Lite
 cpanm --sudo File::Slurp
 cpanm --sudo JSON
-
+cpanm --sudo Hailo
